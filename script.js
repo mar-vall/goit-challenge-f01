@@ -75,10 +75,27 @@ let paisSeleccionado = "ES";
 function renderCart() {
 	const tbody = document.getElementById("cart-body");
 
+	// 🔥 LIMPIAR ANTES DE RENDERIZAR
+	tbody.innerHTML = "";
+
+	// Mostrar mensaje si carrito vacío
+	const emptyMessage = document.getElementById("empty-message");
+
+	if (carrito.length === 0) {
+		emptyMessage.style.display = "block";
+		calcularTotales();
+		return;
+	} else {
+		emptyMessage.style.display = "none";
+	}
+
 	carrito.forEach((producto, index) => {
 		const tr = document.createElement("tr");
 
-		let precioMostrar = producto.precio;
+		let precioMostrar =
+			typeof producto.precio === "number"
+				? producto.precio.toFixed(2) + "€"
+				: producto.precio;
 
 		tr.innerHTML = `
             <td class="product-name">${producto.nombre}</td>
@@ -171,7 +188,7 @@ function calcularTotales() {
 	let subtotal = 0;
 
 	carrito.forEach((producto, index) => {
-		let precio = producto.precio;
+		let precio = limpiarPrecio(producto.precio);
 		let cantidad = producto.cantidad;
 
 		let subtotalProducto = precio * cantidad;
