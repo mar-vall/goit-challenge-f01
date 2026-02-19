@@ -65,7 +65,10 @@ const cuponesDisponibles = [
 	{ codigo: "VIP25", descuento: 25, tipo: "porcentaje", activo: true },
 ];
 
-let carrito = [...productos];
+let carrito = productos.map(producto => ({
+	...producto,
+	precio: limpiarPrecio(producto.precio)
+}));
 let cuponAplicado = null;
 let paisSeleccionado = "ES";
 
@@ -156,6 +159,14 @@ function calcularImpuestosDinamicos() {
 	return null;
 }
 
+function limpiarPrecio(precioString) {
+	if (typeof precioString === "number") return precioString;
+
+	const numeroLimpio = precioString.replace(/[^0-9.]/g, "");
+
+	return parseFloat(numeroLimpio);
+}
+
 function calcularTotales() {
 	let subtotal = 0;
 
@@ -164,6 +175,8 @@ function calcularTotales() {
 		let cantidad = producto.cantidad;
 
 		let subtotalProducto = precio * cantidad;
+
+		subtotalProducto = Number(subtotalProducto.toFixed(2));
 
 		subtotal = subtotal + subtotalProducto;
 
@@ -185,7 +198,10 @@ function calcularTotales() {
 		}
 	}
 
+	descuento = Number(descuento.toFixed(2));
+
 	let subtotalConDescuento = subtotal - descuento;
+	subtotalConDescuento = Number(subtotalConDescuento.toFixed(2));
 
 	let impuestoInfo = calcularImpuestosDinamicos(paisSeleccionado);
 	let impuesto = 0;
@@ -200,8 +216,9 @@ function calcularTotales() {
 	}
 
 	let total = subtotalConDescuento + impuesto;
+	total = Number(total.toFixed(2));
 
-	document.getElementById("subtotal").textContent = subtotal + "€";
+	document.getElementById("subtotal").textContent = subtotal.toFixed(2) + "€";
 	document.getElementById("descuento").textContent = "-" + descuento + "€";
 	document.getElementById("impuesto-label").textContent =
 		nombreImpuesto + ":";
